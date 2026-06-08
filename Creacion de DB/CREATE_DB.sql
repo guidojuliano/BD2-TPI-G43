@@ -133,7 +133,7 @@ GO
 CREATE TABLE Recetas(
     Id_receta BIGINT IDENTITY(1,1) PRIMARY KEY,
     Id_venta BIGINT NOT NULL,
-    Id_cliente BIGINT NOT NULL,
+    Id_cliente BIGINT NULL,
     Medico_prescriptor VARCHAR(150) NOT NULL,
     Fecha_emision DATE NOT NULL,
     Observaciones VARCHAR(255) NULL,
