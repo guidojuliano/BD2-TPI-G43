@@ -5,18 +5,16 @@ IF OBJECT_ID('sp_IngresarStock', 'P') IS NOT NULL
     DROP PROCEDURE sp_IngresarStock;
 GO
 
-CREATE PROCEDURE sp_IngresarStock
-    (@IdProveedor INT,
-    @IdPedido INT = NULL,
-    @IdMedicamento INT,
+CREATE PROCEDURE sp_IngresarStock (
+    @IdProveedor BIGINT,
+    @IdPedido BIGINT = NULL,
+    @IdMedicamento BIGINT,
     @Cantidad INT,
-    @PrecioCosto DECIMAL(10,2)
+    @PrecioCosto money
 )
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1
-    FROM Proveedores
-    WHERE Id_proveedor = @IdProveedor)
+    IF NOT EXISTS (SELECT 1 FROM Proveedores WHERE Id_proveedor = @IdProveedor)
     BEGIN
         RAISERROR('El proveedor no existe.', 16, 1)
         RETURN
@@ -24,18 +22,15 @@ BEGIN
 
     IF @IdPedido IS NOT NULL
     BEGIN
-        IF NOT EXISTS (SELECT 1
-        FROM PedidosCompra
-        WHERE Id_pedido = @IdPedido)
+        IF NOT EXISTS (SELECT 1 FROM PedidosCompra WHERE Id_pedido = @IdPedido)
         BEGIN
             RAISERROR('El pedido no existe.', 16, 1)
             RETURN
         END
 
         IF NOT EXISTS (
-            SELECT 1
-        FROM PedidosCompra
-        WHERE Id_pedido = @IdPedido AND Id_proveedor = @IdProveedor
+            SELECT 1 FROM PedidosCompra 
+            WHERE Id_pedido = @IdPedido AND Id_proveedor = @IdProveedor
         )
         BEGIN
             RAISERROR('El pedido no corresponde al proveedor indicado.', 16, 1)
@@ -43,9 +38,7 @@ BEGIN
         END
     END
 
-    IF NOT EXISTS (SELECT 1
-    FROM Medicamentos
-    WHERE Id_medicamento = @IdMedicamento)
+    IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE Id_medicamento = @IdMedicamento)
     BEGIN
         RAISERROR('El medicamento no existe.', 16, 1)
         RETURN
@@ -74,15 +67,13 @@ BEGIN
     WHERE Id_medicamento = @IdMedicamento
 
     UPDATE AlertasStock
-        SET Resuelta = 1
-        WHERE Id_medicamento = @IdMedicamento
-        AND Resuelta = 0
-        AND EXISTS (
-              SELECT 1
-        FROM Medicamentos
-        WHERE Id_medicamento = @IdMedicamento
-            AND Stock_actual >= Stock_minimo
-          )
+    SET Resuelta = 1
+    WHERE Id_medicamento = @IdMedicamento
+      AND Resuelta = 0
+      AND EXISTS (
+          SELECT 1 FROM Medicamentos
+          WHERE Id_medicamento = @IdMedicamento AND Stock_actual >= Stock_minimo
+      )
 END;
 GO
 
@@ -90,28 +81,25 @@ IF OBJECT_ID('sp_RegistrarVenta', 'P') IS NOT NULL
     DROP PROCEDURE sp_RegistrarVenta;
 GO
 
-CREATE PROCEDURE sp_RegistrarVenta(
-    @IdCliente INT,
-    @IdEmpleado INT,
-    @IdMedicamento INT,
+CREATE PROCEDURE sp_RegistrarVenta (
+    @IdCliente BIGINT,
+    @IdEmpleado BIGINT,
+    @IdMedicamento BIGINT,
     @Cantidad INT,
-    @Observaciones VARCHAR = NULL
+    @PrecioUnitarioCobrado money,
+    @Observaciones VARCHAR(255) = NULL
 )
 AS
 BEGIN
-    DECLARE @StockActual        INT
-    DECLARE @StockMinimo        INT
-    DECLARE @PrecioUnitario     MONEY
-    DECLARE @Subtotal           MONEY
-    DECLARE @Descuento          DECIMAL(5,2) = 0
-    DECLARE @Total              MONEY
-    DECLARE @IdObraSocial       INT
-    DECLARE @IdVenta            BIGINT
+    DECLARE @StockActual INT
+    DECLARE @StockMinimo INT
+    DECLARE @Subtotal money
+    DECLARE @Total money
+    DECLARE @IdVenta BIGINT
 
     SELECT
-        @StockActual    = Stock_actual,
-        @StockMinimo    = Stock_minimo,
-        @PrecioUnitario = Precio_venta_con_iva
+        @StockActual = Stock_actual,
+        @StockMinimo = Stock_minimo
     FROM Medicamentos
     WHERE Id_medicamento = @IdMedicamento
 
@@ -121,54 +109,79 @@ BEGIN
         RETURN
     END
 
-    IF @IdCliente IS NOT NULL
-    BEGIN
-        SELECT @IdObraSocial = Id_obra_social
-        FROM Clientes
-        WHERE Id_cliente = @IdCliente
-
-        IF @IdObraSocial IS NOT NULL
-            SELECT @Descuento = Descuento_general
-        FROM ObrasSociales
-        WHERE Id_obra_social = @IdObraSocial
-    END
-
-    IF NOT EXISTS (SELECT 1
-    FROM Empleados
-    WHERE Id_empleado = @IdEmpleado)
+    IF NOT EXISTS (SELECT 1 FROM Empleados WHERE Id_empleado = @IdEmpleado)
     BEGIN
         RAISERROR('El empleado no existe', 16, 1)
         RETURN
     END
 
-    IF NOT EXISTS (SELECT 1
-    FROM Medicamentos
-    WHERE Id_medicamento = @IdMedicamento)
+    IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE Id_medicamento = @IdMedicamento)
     BEGIN
         RAISERROR('El medicamento no existe', 16, 1)
         RETURN
     END
 
-    SET @Subtotal = @Cantidad * @PrecioUnitario
-    SET @Total    = @Subtotal * (1 - @Descuento / 100)
+    SET @Subtotal = @Cantidad * @PrecioUnitarioCobrado
+    SET @Total = @Subtotal
 
-    INSERT INTO Ventas
-        (Id_cliente, Id_empleado, Fecha, Total, Observaciones)
-    VALUES
-        (@IdCliente, @IdEmpleado, GETDATE(), @Total, @Observaciones)
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        INSERT INTO Ventas
+            (Id_cliente, Id_empleado, Fecha, Total, Observaciones)
+        VALUES
+            (@IdCliente, @IdEmpleado, GETDATE(), @Total, @Observaciones)
 
-    SET @IdVenta = SCOPE_IDENTITY()
+        SET @IdVenta = SCOPE_IDENTITY()
 
-    UPDATE Medicamentos
+        INSERT INTO DetalleVenta
+            (Id_venta, Id_medicamento, Cantidad, Precio_unitario, Subtotal)
+        VALUES
+            (@IdVenta, @IdMedicamento, @Cantidad, @PrecioUnitarioCobrado, @Subtotal)
+
+        UPDATE Medicamentos
         SET Stock_actual = Stock_actual - @Cantidad
         WHERE Id_medicamento = @IdMedicamento
 
-    IF (@StockActual - @Cantidad) < @StockMinimo
+        IF (@StockActual - @Cantidad) < @StockMinimo
         BEGIN
-        INSERT INTO AlertasStock
-            (Id_medicamento, Fecha_alerta, Stock_actual, Stock_minimo, Resuelta)
-        VALUES
-            (@IdMedicamento, GETDATE(), (@StockActual - @Cantidad), @StockMinimo, 0)
-    END
+            INSERT INTO AlertasStock
+                (Id_medicamento, Fecha_alerta, Stock_actual, Stock_minimo, Resuelta)
+            VALUES
+                (@IdMedicamento, GETDATE(), (@StockActual - @Cantidad), @StockMinimo, 0)
+        END
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+IF OBJECT_ID('sp_BuscarMedicamento', 'P') IS NOT NULL
+    DROP PROCEDURE sp_BuscarMedicamento;
+GO
+
+CREATE PROCEDURE sp_BuscarMedicamento (
+    @TerminoBusqueda VARCHAR(100)
+)
+AS
+BEGIN
+    SELECT 
+        Id_medicamento,
+        Nombre,
+        Laboratorio,
+        Principio_activo,
+        Stock_actual,
+        Stock_minimo,
+        Precio_costo,
+        Precio_venta_sin_iva,
+        Precio_venta_con_iva,
+        Requiere_receta
+    FROM Medicamentos
+    WHERE Nombre LIKE '%' + @TerminoBusqueda + '%'
+       OR Laboratorio LIKE '%' + @TerminoBusqueda + '%'
+       OR Principio_activo LIKE '%' + @TerminoBusqueda + '%';
 END;
 GO
