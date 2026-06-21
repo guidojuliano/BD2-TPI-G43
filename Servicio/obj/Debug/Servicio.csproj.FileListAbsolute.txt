@@ -1,0 +1,5 @@
+C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\Servicio\obj\Debug\Servicio.csprojResolveAssemblyReference.cache
+C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\Servicio\bin\Debug\Servicio.dll
+C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\Servicio\bin\Debug\Servicio.pdb
+C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\Servicio\obj\Debug\Servicio.dll
+C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\Servicio\obj\Debug\Servicio.pdb

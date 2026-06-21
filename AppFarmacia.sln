@@ -4,6 +4,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppFarmacia", "AppFarmacia\AppFarmacia.csproj", "{A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dominio", "Dominio\Dominio.csproj", "{B1A2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servicio", "Servicio\Servicio.csproj", "{640A8565-CD11-4E35-BCCA-9375BD1F4E19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,5 +18,13 @@ Global
 		{A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1A2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1A2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{640A8565-CD11-4E35-BCCA-9375BD1F4E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{640A8565-CD11-4E35-BCCA-9375BD1F4E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{640A8565-CD11-4E35-BCCA-9375BD1F4E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{640A8565-CD11-4E35-BCCA-9375BD1F4E19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

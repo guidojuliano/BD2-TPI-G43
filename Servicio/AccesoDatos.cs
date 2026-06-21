@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace AppFarmacia
+namespace Servicio
 {
     public class AccesoDatos
     {
@@ -14,8 +14,8 @@ namespace AppFarmacia
 
         public AccesoDatos()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["DB_Farmacia"]?.ConnectionString 
-                ?? "server=.\\SQLEXPRESS; database=BD2_TPI_G43; integrated security=true";
+            var setting = ConfigurationManager.ConnectionStrings["DB_Farmacia"];
+            string connectionString = setting != null ? setting.ConnectionString : "server=.\\SQLEXPRESS; database=BD2_TPI_G43; integrated security=true";
             conexion = new SqlConnection(connectionString);
             comando = new SqlCommand();
         }

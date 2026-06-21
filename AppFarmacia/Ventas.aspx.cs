@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Servicio;
+using Dominio;
 
 namespace AppFarmacia
 {
