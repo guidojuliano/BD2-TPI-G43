@@ -1,6 +1,0 @@
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\bin\AppFarmacia.dll
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\bin\AppFarmacia.pdb
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\obj\Debug\AppFarmacia.csproj.AssemblyReference.cache
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\obj\Debug\AppFarmacia.csproj.CoreCompileInputs.cache
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\obj\Debug\AppFarmacia.dll
-C:\Users\julia\Documents\UTN FRGP\BDD2\BD2-TPI-G43\AppFarmacia\obj\Debug\AppFarmacia.pdb

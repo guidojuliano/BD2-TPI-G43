@@ -27,7 +27,22 @@
                 <div class="card-header bg-dark text-white fw-bold">Resultados de Búsqueda</div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <asp:GridView ID="dgvMedicamentos" runat="server" CssClass="table table-hover table-striped mb-0 align-middle"></asp:GridView>
+                        <asp:GridView ID="dgvMedicamentos" runat="server" CssClass="table table-hover table-striped mb-0 align-middle" AutoGenerateColumns="false">
+                            <Columns>
+                                <asp:BoundField DataField="Id_medicamento" HeaderText="ID" />
+                                <asp:BoundField DataField="Nombre" HeaderText="Medicamento" />
+                                <asp:BoundField DataField="Laboratorio" HeaderText="Laboratorio" />
+                                <asp:BoundField DataField="Principio_activo" HeaderText="Principio Activo" />
+                                <asp:BoundField DataField="Stock_actual" HeaderText="Stock" />
+                                <asp:BoundField DataField="Precio_venta_sin_iva" HeaderText="Precio Sin IVA" DataFormatString="{0:C2}" HtmlEncode="false" />
+                                <asp:BoundField DataField="Precio_venta_con_iva" HeaderText="Precio Con IVA" DataFormatString="{0:C2}" HtmlEncode="false" />
+                                <asp:TemplateField HeaderText="Requiere Receta">
+                                    <ItemTemplate>
+                                        <%# Convert.ToBoolean(Eval("Requiere_receta")) ? "Sí" : "No" %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
                     </div>
                     <asp:Panel ID="pnlVacio" runat="server" Visible="false" CssClass="p-4 text-center text-muted">
                         No se encontraron medicamentos para el término de búsqueda ingresado.

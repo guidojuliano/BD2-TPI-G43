@@ -87,7 +87,10 @@ CREATE PROCEDURE sp_RegistrarVenta (
     @IdMedicamento BIGINT,
     @Cantidad INT,
     @PrecioUnitarioCobrado money,
-    @Observaciones VARCHAR(255) = NULL
+    @Observaciones VARCHAR(255) = NULL,
+    @MedicoPrescriptor VARCHAR(150) = NULL,
+    @FechaEmisionReceta DATE = NULL,
+    @RecetaObservaciones VARCHAR(255) = NULL
 )
 AS
 BEGIN
@@ -96,10 +99,12 @@ BEGIN
     DECLARE @Subtotal money
     DECLARE @Total money
     DECLARE @IdVenta BIGINT
+    DECLARE @RequiereReceta BIT
 
     SELECT
         @StockActual = Stock_actual,
-        @StockMinimo = Stock_minimo
+        @StockMinimo = Stock_minimo,
+        @RequiereReceta = Requiere_receta
     FROM Medicamentos
     WHERE Id_medicamento = @IdMedicamento
 
@@ -133,22 +138,23 @@ BEGIN
 
         SET @IdVenta = SCOPE_IDENTITY()
 
+        IF @RequiereReceta = 1
+        BEGIN
+            IF @MedicoPrescriptor IS NULL OR @FechaEmisionReceta IS NULL
+            BEGIN
+                RAISERROR('No se puede vender un medicamento que requiere receta sin los datos de la receta.', 16, 1)
+            END
+
+            INSERT INTO Recetas
+                (Id_venta, Id_cliente, Medico_prescriptor, Fecha_emision, Observaciones)
+            VALUES
+                (@IdVenta, @IdCliente, @MedicoPrescriptor, @FechaEmisionReceta, @RecetaObservaciones)
+        END
+
         INSERT INTO DetalleVenta
             (Id_venta, Id_medicamento, Cantidad, Precio_unitario, Subtotal)
         VALUES
             (@IdVenta, @IdMedicamento, @Cantidad, @PrecioUnitarioCobrado, @Subtotal)
-
-        UPDATE Medicamentos
-        SET Stock_actual = Stock_actual - @Cantidad
-        WHERE Id_medicamento = @IdMedicamento
-
-        IF (@StockActual - @Cantidad) < @StockMinimo
-        BEGIN
-            INSERT INTO AlertasStock
-                (Id_medicamento, Fecha_alerta, Stock_actual, Stock_minimo, Resuelta)
-            VALUES
-                (@IdMedicamento, GETDATE(), (@StockActual - @Cantidad), @StockMinimo, 0)
-        END
 
         COMMIT TRANSACTION;
     END TRY

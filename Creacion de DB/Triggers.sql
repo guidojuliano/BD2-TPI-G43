@@ -1,6 +1,10 @@
 USE BD2_TPI_G43;
 GO
 
+IF OBJECT_ID('trg_DescuentoStock', 'TR') IS NOT NULL
+    DROP TRIGGER trg_DescuentoStock;
+GO
+
 CREATE TRIGGER trg_DescuentoStock ON DetalleVenta
 AFTER INSERT
 AS
@@ -10,6 +14,10 @@ BEGIN
     FROM Medicamentos M
     INNER JOIN inserted I ON M.Id_medicamento = I.Id_medicamento
 END;
+GO
+
+IF OBJECT_ID('trg_AlertaStockMinimo', 'TR') IS NOT NULL
+    DROP TRIGGER trg_AlertaStockMinimo;
 GO
 
 CREATE TRIGGER trg_AlertaStockMinimo ON Medicamentos
@@ -30,6 +38,10 @@ BEGIN
             )
     END
 END;
+GO
+
+IF OBJECT_ID('trg_ValidarReceta', 'TR') IS NOT NULL
+    DROP TRIGGER trg_ValidarReceta;
 GO
 
 CREATE TRIGGER trg_ValidarReceta ON DetalleVenta
