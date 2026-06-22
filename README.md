@@ -4,7 +4,7 @@ Trabajo Practico Integrador para la materia Bases de Datos II de la Universidad 
 
 ## Integrantes
 
-- Guido Juliano Ubaldi
+- Guido Juliano Mazzuchini Ubaldi
 - Dilan Benitez
 
 ## Descripcion del Sistema
