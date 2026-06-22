@@ -29,6 +29,9 @@
                             <a class="nav-link" href="Ventas.aspx">Registrar Venta</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="Compras.aspx">Ingresar Stock</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="Reportes.aspx">Panel de Control</a>
                         </li>
                     </ul>
